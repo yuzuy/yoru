@@ -1,8 +1,9 @@
 package ast
 
 import (
-	"monkey/token"
 	"testing"
+
+	"monkey/token"
 )
 
 func TestString(t *testing.T) {
@@ -10,7 +11,7 @@ func TestString(t *testing.T) {
 		Statements: []Statement{
 			&LetStatement{
 				Token: token.Token{Type: token.Let, Literal: "let"},
-				Name:  &Identifier{
+				Name: &Identifier{
 					Token: token.Token{Type: token.Ident, Literal: "myVar"},
 					Value: "myVar",
 				},

@@ -1,8 +1,9 @@
 package lexer
 
 import (
-	"monkey/token"
 	"testing"
+
+	"monkey/token"
 )
 
 func TestNextToken(t *testing.T) {
@@ -25,6 +26,8 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+"hogehoge";
+"nya nya nya";
 `
 
 	tests := []struct {
@@ -104,6 +107,10 @@ if (5 < 10) {
 		{token.NotEQ, "!="},
 		{token.Int, "9"},
 		{token.Semicolon, ";"},
+		{token.String, "hogehoge"},
+		{token.Semicolon, ";"},
+		{token.String, "nya nya nya"},
+		{token.Semicolon, ";"},
 		{token.EOF, ""},
 	}
 
@@ -114,12 +121,26 @@ if (5 < 10) {
 
 		if tok.Type != tt.expectedType {
 			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
+				i, tt.expectedType, tok.Type)
 		}
 
 		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
 				i, tt.expectedLiteral, tok.Literal)
 		}
+	}
+}
+
+func TestStringLiteralError(t *testing.T) {
+	input := `"hoge`
+	l := New(input)
+
+	tok := l.NextToken()
+	if tok.Type != token.Illegal {
+		t.Fatalf("token type wrong. expected=%s, got=%s", token.Illegal, tok.Type)
+	}
+	errMsg := "string literal not terminated"
+	if tok.Literal != errMsg {
+		t.Fatalf("error message wrong. expected=%s, got=%s", errMsg, tok.Literal)
 	}
 }

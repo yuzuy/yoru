@@ -2,9 +2,10 @@ package parser
 
 import (
 	"fmt"
+	"testing"
+
 	"monkey/ast"
 	"monkey/lexer"
-	"testing"
 )
 
 func TestLetStatements(t *testing.T) {
@@ -71,7 +72,7 @@ func TestReturnStatements(t *testing.T) {
 		expectReturnValue string
 	}{
 		{"return hoge;", "hoge"},
-		{"return x + y;", "(x + y)",},
+		{"return x + y;", "(x + y)"},
 		{"return foo * bar + foobar", "((foo * bar) + foobar)"},
 	}
 
@@ -87,7 +88,7 @@ func TestReturnStatements(t *testing.T) {
 
 		stmt, ok := program.Statements[0].(*ast.ReturnStatement)
 		if !ok {
-			t.Fatalf("program.Statements[0] not ast.ReturnStatement. got=%T",program.Statements[0])
+			t.Fatalf("program.Statements[0] not ast.ReturnStatement. got=%T", program.Statements[0])
 		}
 
 		if stmt.ReturnValue.String() != tt.expectReturnValue {
@@ -192,6 +193,25 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 	if literal.TokenLiteral() != "5" {
 		t.Errorf("literal.TokenLiteral not %s. got=%s", "5", literal.TokenLiteral())
+	}
+}
+
+func TestStringLiteralExpression(t *testing.T) {
+	input := `"hello world"`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("exp not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
 	}
 }
 

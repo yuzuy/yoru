@@ -1,6 +1,10 @@
 package lexer
 
-import "monkey/token"
+import (
+	"errors"
+
+	"monkey/token"
+)
 
 type Lexer struct {
 	input        string
@@ -81,6 +85,13 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.Lbrace, l.ch)
 	case '}':
 		tok = newToken(token.Rbrace, l.ch)
+	case '"':
+		tok.Type = token.String
+		literal, err := l.readString()
+		if err != nil {
+			return token.Token{Type: token.Illegal, Literal: err.Error()}
+		}
+		tok.Literal = literal
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -118,6 +129,22 @@ func (l *Lexer) readIdentifier() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readString() (string, error) {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '"' {
+			break
+		}
+
+		if l.ch == 0 {
+			return "", errors.New("string literal not terminated")
+		}
+	}
+
+	return l.input[position:l.position], nil
 }
 
 func isLetter(ch byte) bool {

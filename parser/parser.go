@@ -3,10 +3,11 @@ package parser
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"monkey/ast"
 	"monkey/lexer"
 	"monkey/token"
-	"strconv"
 )
 
 const (
@@ -59,6 +60,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.Lparen, p.parseGroupedExpression)
 	p.registerPrefix(token.If, p.parseIfExpression)
 	p.registerPrefix(token.Function, p.parseFunctionLiteral)
+	p.registerPrefix(token.String, p.parseStringLiteral)
 
 	p.infixParseFns = make(map[token.Type]infixParseFn)
 	p.registerInfix(token.Plus, p.parseInfixExpression)
@@ -315,6 +317,13 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit.Value = v
 
 	return lit
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
 }
 
 func (p *Parser) parseBoolean() ast.Expression {

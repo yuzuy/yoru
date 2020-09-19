@@ -1,10 +1,11 @@
 package evaluator
 
 import (
+	"testing"
+
 	"monkey/lexer"
 	"monkey/object"
 	"monkey/parser"
-	"testing"
 )
 
 func TestEvalIntegerExpresion(t *testing.T) {
@@ -188,6 +189,49 @@ func TestFunctionApplication(t *testing.T) {
 	}
 }
 
+func TestStringLiteral(t *testing.T) {
+	input := `"hello"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("object not *object.String. got=%T", evaluated)
+	}
+
+	if str.Value != "hello" {
+		t.Errorf("String has wrong value. got=%q", str.Value)
+	}
+}
+
+func TestStringConcatenation(t *testing.T) {
+	input := `"hello" +  " " + "world"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("object not *object.String. got=%T", evaluated)
+	}
+
+	if str.Value != "hello world" {
+		t.Errorf("String has wrong value. got=%q", str.Value)
+	}
+}
+
+func TestStringComparison(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{`"hoge" == "hoge"`, true},
+		{`"hoge" != "hoge"`, false},
+	}
+
+	for _, v := range tests {
+		evaluated := testEval(v.input)
+		testBooleanObject(t, evaluated, v.expected)
+	}
+}
+
 func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
@@ -221,6 +265,7 @@ if (10 > 1) {
 }
 `, "unknown operator: BOOLEAN + BOOLEAN"},
 		{"hoge;", "identifier not found: hoge"},
+		{`"hello" - "world"`, "unknown operator: STRING - STRING"},
 	}
 
 	for _, tt := range tests {

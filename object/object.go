@@ -3,8 +3,9 @@ package object
 import (
 	"bytes"
 	"fmt"
-	"monkey/ast"
 	"strings"
+
+	"monkey/ast"
 )
 
 type Type string
@@ -16,6 +17,7 @@ const (
 	IntObj         = "INTEGER"
 	BoolObj        = "BOOLEAN"
 	FunctionObj    = "FUNCTION"
+	StringObj      = "STRING"
 )
 
 type Object interface {
@@ -80,3 +82,10 @@ func (f *Function) Inspect() string {
 
 	return out.String()
 }
+
+type String struct {
+	Value string
+}
+
+func (s *String) Type() Type      { return StringObj }
+func (s *String) Inspect() string { return s.Value }
