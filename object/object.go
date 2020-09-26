@@ -18,6 +18,8 @@ const (
 	BoolObj        = "BOOLEAN"
 	FunctionObj    = "FUNCTION"
 	StringObj      = "STRING"
+
+	BuiltInObj = "BUILD-IN"
 )
 
 type Object interface {
@@ -89,3 +91,12 @@ type String struct {
 
 func (s *String) Type() Type      { return StringObj }
 func (s *String) Inspect() string { return s.Value }
+
+type BuiltIn struct {
+	Fn BuiltInFunction
+}
+
+func (b *BuiltIn) Type() Type      { return BuiltInObj }
+func (b *BuiltIn) Inspect() string { return "built-in function" }
+
+type BuiltInFunction func(args ...Object) Object
