@@ -21,6 +21,7 @@ const (
 	Bang     = "!"
 	Asterisk = "*"
 	Slash    = "/"
+	Mod      = "%"
 
 	LT = "<"
 	GT = ">"

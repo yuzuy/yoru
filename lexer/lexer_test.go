@@ -29,6 +29,7 @@ if (5 < 10) {
 "hogehoge";
 "nya nya nya";
 [1, 2];
+5 % 2;
 `
 
 	tests := []struct {
@@ -117,6 +118,10 @@ if (5 < 10) {
 		{token.Comma, ","},
 		{token.Int, "2"},
 		{token.RBracket, "]"},
+		{token.Semicolon, ";"},
+		{token.Int, "5"},
+		{token.Mod, "%"},
+		{token.Int, "2"},
 		{token.Semicolon, ";"},
 		{token.EOF, ""},
 	}
