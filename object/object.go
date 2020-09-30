@@ -18,6 +18,7 @@ const (
 	BoolObj        = "BOOLEAN"
 	FunctionObj    = "FUNCTION"
 	StringObj      = "STRING"
+	ArrayObj       = "ARRAY"
 
 	BuiltInObj = "BUILD-IN"
 )
@@ -91,6 +92,26 @@ type String struct {
 
 func (s *String) Type() Type      { return StringObj }
 func (s *String) Inspect() string { return s.Value }
+
+type Array struct {
+	Elements []Object
+}
+
+func (a *Array) Type() Type { return ArrayObj }
+func (a *Array) Inspect() string {
+	var out bytes.Buffer
+
+	var elements []string
+	for _, e := range a.Elements {
+		elements = append(elements, e.Inspect())
+	}
+
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("]")
+
+	return out.String()
+}
 
 type BuiltIn struct {
 	Fn BuiltInFunction

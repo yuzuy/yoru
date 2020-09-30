@@ -12,25 +12,27 @@ import (
 
 const (
 	_ int = iota
-	Lowset
+	LowSet
 	Equals      // ==
-	Lessgreater // > or <
+	LessGreater // > or <
 	Sum         // +
 	Product     // *
 	Prefix      // !x or -x
 	Call        // function
+	Index       // array[idx]
 )
 
 var precedences = map[token.Type]int{
 	token.EQ:       Equals,
 	token.NotEQ:    Equals,
-	token.LT:       Lessgreater,
-	token.GT:       Lessgreater,
+	token.LT:       LessGreater,
+	token.GT:       LessGreater,
 	token.Plus:     Sum,
 	token.Minus:    Sum,
 	token.Slash:    Product,
 	token.Asterisk: Product,
 	token.Lparen:   Call,
+	token.LBracket: Index,
 }
 
 type Parser struct {
@@ -58,6 +60,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.True, p.parseBoolean)
 	p.registerPrefix(token.False, p.parseBoolean)
 	p.registerPrefix(token.Lparen, p.parseGroupedExpression)
+	p.registerPrefix(token.LBracket, p.parseArrayLiteral)
 	p.registerPrefix(token.If, p.parseIfExpression)
 	p.registerPrefix(token.Function, p.parseFunctionLiteral)
 	p.registerPrefix(token.String, p.parseStringLiteral)
@@ -72,6 +75,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.Lparen, p.parseCallExpression)
+	p.registerInfix(token.LBracket, p.parseIndexExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -125,7 +129,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 	p.nextToken()
 
-	stmt.Value = p.parseExpression(Lowset)
+	stmt.Value = p.parseExpression(LowSet)
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
@@ -139,7 +143,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.nextToken()
 
-	stmt.ReturnValue = p.parseExpression(Lowset)
+	stmt.ReturnValue = p.parseExpression(LowSet)
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
@@ -151,7 +155,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
-	stmt.Expression = p.parseExpression(Lowset)
+	stmt.Expression = p.parseExpression(LowSet)
 
 	if p.peekTokenIs(token.Semicolon) {
 		p.nextToken()
@@ -276,32 +280,8 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 
 func (p *Parser) parseCallExpression(fun ast.Expression) ast.Expression {
 	exp := &ast.CallExpression{Token: p.curToken, Function: fun}
-	exp.Arguments = p.parseCallArguments()
+	exp.Arguments = p.parseExpressionList(token.Rparen)
 	return exp
-}
-
-func (p *Parser) parseCallArguments() []ast.Expression {
-	var args []ast.Expression
-
-	if p.peekTokenIs(token.Rparen) {
-		p.nextToken()
-		return args
-	}
-
-	p.nextToken()
-	args = append(args, p.parseExpression(Lowset))
-
-	for p.peekTokenIs(token.Comma) {
-		p.nextToken()
-		p.nextToken()
-		args = append(args, p.parseExpression(Lowset))
-	}
-
-	if !p.expectPeek(token.Rparen) {
-		return nil
-	}
-
-	return args
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
@@ -365,7 +345,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	p.nextToken()
-	expression.Condition = p.parseExpression(Lowset)
+	expression.Condition = p.parseExpression(LowSet)
 
 	if !p.expectPeek(token.Rparen) {
 		return nil
@@ -393,8 +373,53 @@ func (p *Parser) parseIfExpression() ast.Expression {
 func (p *Parser) parseGroupedExpression() ast.Expression {
 	p.nextToken()
 
-	exp := p.parseExpression(Lowset)
+	exp := p.parseExpression(LowSet)
 	if !p.expectPeek(token.Rparen) {
+		return nil
+	}
+
+	return exp
+}
+
+func (p *Parser) parseArrayLiteral() ast.Expression {
+	array := &ast.ArrayLiteral{Token: p.curToken}
+
+	array.Elements = p.parseExpressionList(token.RBracket)
+
+	return array
+}
+
+func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
+	var list []ast.Expression
+
+	if p.peekTokenIs(end) {
+		p.nextToken()
+		return list
+	}
+
+	p.nextToken()
+	list = append(list, p.parseExpression(LowSet))
+
+	for p.peekTokenIs(token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		list = append(list, p.parseExpression(LowSet))
+	}
+
+	if !p.expectPeek(end) {
+		return nil
+	}
+
+	return list
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+
+	p.nextToken()
+	exp.Index = p.parseExpression(LowSet)
+
+	if !p.expectPeek(token.RBracket) {
 		return nil
 	}
 
@@ -423,7 +448,7 @@ func (p *Parser) peekPrecedence() int {
 		return p
 	}
 
-	return Lowset
+	return LowSet
 }
 
 func (p *Parser) curPrecedence() int {
@@ -431,5 +456,5 @@ func (p *Parser) curPrecedence() int {
 		return p
 	}
 
-	return Lowset
+	return LowSet
 }

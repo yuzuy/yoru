@@ -28,6 +28,7 @@ if (5 < 10) {
 10 != 9;
 "hogehoge";
 "nya nya nya";
+[1, 2];
 `
 
 	tests := []struct {
@@ -110,6 +111,12 @@ if (5 < 10) {
 		{token.String, "hogehoge"},
 		{token.Semicolon, ";"},
 		{token.String, "nya nya nya"},
+		{token.Semicolon, ";"},
+		{token.LBracket, "["},
+		{token.Int, "1"},
+		{token.Comma, ","},
+		{token.Int, "2"},
+		{token.RBracket, "]"},
 		{token.Semicolon, ";"},
 		{token.EOF, ""},
 	}

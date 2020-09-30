@@ -96,9 +96,9 @@ func TestIfElseExpression(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		integ, ok := tt.expected.(int64)
+		integ, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, integ)
+			testIntegerObject(t, evaluated, int64(integ))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -232,6 +232,52 @@ func TestStringComparison(t *testing.T) {
 	}
 }
 
+func TestArrayLiterals(t *testing.T) {
+	input := "[1, 2, 3 * 4]"
+
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Array)
+	if !ok {
+		t.Fatalf("object not Array. got=%T(%+v)", evaluated, evaluated)
+	}
+
+	if len(result.Elements) != 3 {
+		t.Fatalf("array has wrong num of elements. got=%d", len(result.Elements))
+	}
+
+	testIntegerObject(t, result.Elements[0], 1)
+	testIntegerObject(t, result.Elements[1], 2)
+	testIntegerObject(t, result.Elements[2], 12)
+}
+
+func TestArrayIndexExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"[1, 2, 3][0]", 1},
+		{"[1, 2, 3][1]", 2},
+		{"[1, 2, 3][2]", 3},
+		{"let i = 0; [1][i]", 1},
+		{"[1, 2, 3][1 + 1]", 3},
+		{"let myArray = [1, 2, 3]; myArray[1]", 2},
+		{"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2]", 6},
+		{"let myArray = [1, 2, 3]; let i = myArray[1]; myArray[i]", 3},
+		{"[1, 2, 3][3]", nil},
+		{"[1, 2, 3][-1]", nil},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integ, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integ))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
@@ -287,7 +333,7 @@ func TestBuiltInFunctions(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected interface{}
-	} {
+	}{
 		{`len("")`, 0},
 		{`len("four")`, 4},
 		{`len("hello world")`, 11},

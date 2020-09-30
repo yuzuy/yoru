@@ -31,10 +31,12 @@ const (
 	Comma     = ","
 	Semicolon = ";"
 
-	Lparen = "("
-	Rparen = ")"
-	Lbrace = "{"
-	Rbrace = "}"
+	Lparen   = "("
+	Rparen   = ")"
+	Lbrace   = "{"
+	Rbrace   = "}"
+	LBracket = "["
+	RBracket = "]"
 
 	Function = "FUNCTION"
 	Let      = "LET"
