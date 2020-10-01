@@ -3,7 +3,7 @@ package lexer
 import (
 	"errors"
 
-	"monkey/token"
+	"github.com/yuzuy/yoru/token"
 )
 
 type Lexer struct {

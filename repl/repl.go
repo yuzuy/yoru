@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"monkey/evaluator"
-	"monkey/lexer"
-	"monkey/object"
-	"monkey/parser"
+	"github.com/yuzuy/yoru/evaluator"
+	"github.com/yuzuy/yoru/lexer"
+	"github.com/yuzuy/yoru/object"
+	"github.com/yuzuy/yoru/parser"
 )
 
 const PROMPT = ">> "
@@ -58,7 +58,7 @@ const monkeyFace = `            __,__
 func printParserErrors(out io.Writer, errors []error) {
 	io.WriteString(out, monkeyFace)
 	io.WriteString(out, "Woops! we run into some monkey business here!\n")
-	io.WriteString(out, "parser errprs:\n")
+	io.WriteString(out, "parser errors:\n")
 	for _, err := range errors {
 		io.WriteString(out, "\t"+err.Error()+"\n")
 	}

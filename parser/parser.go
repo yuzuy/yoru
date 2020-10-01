@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"monkey/ast"
-	"monkey/lexer"
-	"monkey/token"
+	"github.com/yuzuy/yoru/ast"
+	"github.com/yuzuy/yoru/lexer"
+	"github.com/yuzuy/yoru/token"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"monkey/object"
+	"github.com/yuzuy/yoru/object"
 )
 
 var builtIns = map[string]*object.BuiltIn{

@@ -6,7 +6,7 @@ import (
 	"hash/fnv"
 	"strings"
 
-	"monkey/ast"
+	"github.com/yuzuy/yoru/ast"
 )
 
 type Type string

@@ -8,11 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"monkey/evaluator"
-	"monkey/lexer"
-	"monkey/object"
-	"monkey/parser"
-	"monkey/repl"
+	"github.com/yuzuy/yoru/evaluator"
+	"github.com/yuzuy/yoru/lexer"
+	"github.com/yuzuy/yoru/object"
+	"github.com/yuzuy/yoru/parser"
+	"github.com/yuzuy/yoru/repl"
 )
 
 func main() {
@@ -20,13 +20,13 @@ func main() {
 
 	filename := flag.Arg(0)
 	if filename == "" {
-		fmt.Printf("Hello! This is the Monkey programming language!\n")
+		fmt.Printf("Hello! This is the Yoru programming language!\n")
 		fmt.Println("Feel free to type in commands")
 		repl.Start(os.Stdin, os.Stdout)
 		return
 	}
 
-	if ext := filepath.Ext(filename); ext != ".monkey" {
+	if ext := filepath.Ext(filename); ext != ".yoru" {
 		log.Printf("invalid file extension %q\n", ext)
 		return
 	}
@@ -60,5 +60,5 @@ func main() {
 
 func init() {
 	log.SetFlags(0)
-	log.SetPrefix("monkey: ")
+	log.SetPrefix("yoru: ")
 }
