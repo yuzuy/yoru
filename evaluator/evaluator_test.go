@@ -278,6 +278,64 @@ func TestArrayIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestHashLiterals(t *testing.T) {
+	input := `
+let two = "two"
+{
+	"one":   1,
+	two:     2,
+	"three": 3,
+}
+`
+
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Hash)
+	if !ok {
+		t.Fatalf("Eval not returned Hash. got=%T(%+v)", evaluated, evaluated)
+	}
+
+	expected := map[object.HashKey]int64{
+		(&object.String{Value: "one"}).HashKey():   1,
+		(&object.String{Value: "two"}).HashKey():   2,
+		(&object.String{Value: "three"}).HashKey(): 3,
+	}
+
+	if len(result.Pairs) != len(expected) {
+		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
+	}
+
+	for expectedK, expectedV := range expected {
+		p, ok := result.Pairs[expectedK]
+		if !ok {
+			t.Errorf("no pair for key %q found", expectedK)
+		}
+
+		testIntegerObject(t, p.Value, expectedV)
+	}
+}
+
+func TestHashIndexLiterals(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`{"foo": 5}["foo"]`, 5},
+		{`{"foo": 5}["bar"]`, nil},
+		{`let foo = "foo"; {"foo": 5}[foo]`, 5},
+		{`{}["foo"]`, nil},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
@@ -312,6 +370,7 @@ if (10 > 1) {
 `, "unknown operator: BOOLEAN + BOOLEAN"},
 		{"hoge;", "identifier not found: hoge"},
 		{`"hello" - "world"`, "unknown operator: STRING - STRING"},
+		{`{"name": "monkey"}[fn(x) { x }];`, "unusable as hash key: FUNCTION"},
 	}
 
 	for _, tt := range tests {

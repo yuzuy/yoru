@@ -30,6 +30,7 @@ if (5 < 10) {
 "nya nya nya";
 [1, 2];
 5 % 2;
+{"foo":"bar"};
 `
 
 	tests := []struct {
@@ -122,6 +123,12 @@ if (5 < 10) {
 		{token.Int, "5"},
 		{token.Mod, "%"},
 		{token.Int, "2"},
+		{token.Semicolon, ";"},
+		{token.Lbrace, "{"},
+		{token.String, "foo"},
+		{token.Colon, ":"},
+		{token.String, "bar"},
+		{token.Rbrace, "}"},
 		{token.Semicolon, ";"},
 		{token.EOF, ""},
 	}

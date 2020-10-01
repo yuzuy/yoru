@@ -30,6 +30,7 @@ const (
 	NotEQ = "!="
 
 	Comma     = ","
+	Colon     = ":"
 	Semicolon = ";"
 
 	Lparen   = "("
