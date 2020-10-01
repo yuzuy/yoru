@@ -167,7 +167,7 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	return &object.Integer{Value: -value}
 }
 
-func evalInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+func evalInfixExpression(operator string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.IntObj && right.Type() == object.IntObj:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -184,7 +184,7 @@ func evalInfixExpression(operator string, left object.Object, right object.Objec
 	}
 }
 
-func evalIntegerInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 
@@ -212,7 +212,7 @@ func evalIntegerInfixExpression(operator string, left object.Object, right objec
 	}
 }
 
-func evalStringInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
 	leftVal := left.(*object.String).Value
 	rightVal := right.(*object.String).Value
 
@@ -256,7 +256,7 @@ func isTruthy(obj object.Object) bool {
 	}
 }
 
-func evalIndexExpression(left object.Object, index object.Object) object.Object {
+func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case left.Type() == object.ArrayObj && index.Type() == object.IntObj:
 		return evalArrayIndexExpression(left, index)
