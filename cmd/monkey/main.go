@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 
 	"monkey/evaluator"
@@ -21,11 +20,7 @@ func main() {
 
 	filename := flag.Arg(0)
 	if filename == "" {
-		u, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("Hello %s! This is the Monkey programming language!\n", u.Name)
+		fmt.Printf("Hello! This is the Monkey programming language!\n")
 		fmt.Println("Feel free to type in commands")
 		repl.Start(os.Stdin, os.Stdout)
 		return
