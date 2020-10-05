@@ -134,17 +134,17 @@ func TestReturnStatement(t *testing.T) {
 		input    string
 		expected int64
 	}{
-		{"return 10;", 10},
-		{"return 10; 9;", 10},
-		{"return 2 * 5; 9;", 10},
-		{"9; return 2 * 5; 11;", 10},
+		{"ret 10;", 10},
+		{"ret 10; 9;", 10},
+		{"ret 2 * 5; 9;", 10},
+		{"9; ret 2 * 5; 11;", 10},
 		{`
 if (10 > 1) {
 	if (10 > 1) {
-		return 10;
+		ret 10;
 	}
 
-	return 1;
+	ret 1;
 }
 `, 10},
 	}
@@ -201,7 +201,7 @@ func TestFunctionApplication(t *testing.T) {
 		expected int64
 	}{
 		{"let identity = fn(x) { x; }; identity(5);", 5},
-		{"let identity = fn(x) { return x; }; identity(5);", 5},
+		{"let identity = fn(x) { ret x; }; identity(5);", 5},
 		{"let double = fn(x) { x * 2 }; double(5)", 10},
 		{"let add = fn(x, y) { x + y; }; add(5, 5)", 10},
 		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5))", 20},
@@ -386,10 +386,10 @@ func TestErrorHandling(t *testing.T) {
 		{`
 if (10 > 1) {
 	if (10 > 1) {
-		return true + false;
+		ret true + false;
 	}
 
-	return 1;
+	ret 1;
 }
 `, "unknown operator: BOOLEAN + BOOLEAN"},
 		{"hoge;", "identifier not found: hoge"},

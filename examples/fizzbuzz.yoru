@@ -1,14 +1,14 @@
 let fizzbuzz = fn(v) {
     switch {
     case v%15==0:
-        return "FizzBuzz"
+        ret "FizzBuzz"
     case v%3==0:
-        return "Fizz"
+        ret "Fizz"
     case v%5==0:
-        return "Buzz"
+        ret "Buzz"
     }
 
-    return v
+    ret v
 }
 
 print(fizzbuzz(15))

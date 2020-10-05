@@ -71,9 +71,9 @@ func TestReturnStatements(t *testing.T) {
 		input             string
 		expectReturnValue string
 	}{
-		{"return hoge;", "hoge"},
-		{"return x + y;", "(x + y)"},
-		{"return foo * bar + foobar", "((foo * bar) + foobar)"},
+		{"ret hoge;", "hoge"},
+		{"ret x + y;", "(x + y)"},
+		{"ret foo * bar + foobar", "((foo * bar) + foobar)"},
 	}
 
 	for _, tt := range tests {

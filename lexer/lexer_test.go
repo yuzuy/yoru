@@ -19,9 +19,9 @@ let result = add(five, ten);
 5 < 10 > 5;
 
 if (5 < 10) {
-	return true;
+	ret true;
 } else {
-	return false;
+	ret false;
 }
 
 10 == 10;
@@ -33,9 +33,9 @@ if (5 < 10) {
 {"foo":"bar"};
 switch foo {
 case "foo":
-  return 1;
+  ret 1;
 case "bar":
-  return 2;
+  ret 2;
 };
 `
 
@@ -98,13 +98,13 @@ case "bar":
 		{token.Int, "10"},
 		{token.Rparen, ")"},
 		{token.Lbrace, "{"},
-		{token.Return, "return"},
+		{token.Return, "ret"},
 		{token.True, "true"},
 		{token.Semicolon, ";"},
 		{token.Rbrace, "}"},
 		{token.Else, "else"},
 		{token.Lbrace, "{"},
-		{token.Return, "return"},
+		{token.Return, "ret"},
 		{token.False, "false"},
 		{token.Semicolon, ";"},
 		{token.Rbrace, "}"},
@@ -142,13 +142,13 @@ case "bar":
 		{token.Case, "case"},
 		{token.String, "foo"},
 		{token.Colon, ":"},
-		{token.Return, "return"},
+		{token.Return, "ret"},
 		{token.Int, "1"},
 		{token.Semicolon, ";"},
 		{token.Case, "case"},
 		{token.String, "bar"},
 		{token.Colon, ":"},
-		{token.Return, "return"},
+		{token.Return, "ret"},
 		{token.Int, "2"},
 		{token.Semicolon, ";"},
 		{token.Rbrace, "}"},

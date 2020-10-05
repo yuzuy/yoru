@@ -63,7 +63,7 @@ var keywords = map[string]Type{
 	"switch":  Switch,
 	"case":    Case,
 	"default": Default,
-	"return":  Return,
+	"ret":     Return,
 	"null":    Null,
 }
 
