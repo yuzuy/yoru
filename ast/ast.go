@@ -184,6 +184,50 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type SwitchExpression struct {
+	Token   token.Token
+	Target  Expression
+	Cases   map[int]*Case
+	Default []Statement
+}
+
+type Case struct {
+	Condition Expression
+	Block     []Statement
+}
+
+func (se *SwitchExpression) expressionNode()      {}
+func (se *SwitchExpression) TokenLiteral() string { return se.Token.Literal }
+func (se *SwitchExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("switch ")
+	out.WriteString(se.Target.String())
+	out.WriteString(" ")
+	out.WriteString("{")
+	for i := 1; ; i++ {
+		c, ok := se.Cases[i]
+		if !ok {
+			break
+		}
+		out.WriteString("case ")
+		out.WriteString(c.Condition.String())
+		out.WriteString(":")
+		for _, s := range c.Block {
+			out.WriteString(s.String())
+		}
+	}
+	if se.Default != nil {
+		out.WriteString("default:")
+		for _, s := range se.Default {
+			out.WriteString(s.String())
+		}
+	}
+	out.WriteString("}")
+
+	return out.String()
+}
+
 type CallExpression struct {
 	Token     token.Token
 	Function  Expression

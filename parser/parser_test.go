@@ -590,6 +590,71 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestSwitchExpression(t *testing.T) {
+	input := `switch x {
+case x:
+  1;
+case y:
+  2;
+default:
+  3;
+};`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statement. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+	switchExp, ok := stmt.Expression.(*ast.SwitchExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression not *ast.SwitchExpression. got=%T", stmt.Expression)
+	}
+
+	if len(switchExp.Cases) != 2 {
+		t.Fatalf("switchExp.Cases has wrong length. got=%d", len(switchExp.Cases))
+	}
+	t.Log(switchExp.Cases)
+	xCond := switchExp.Cases[1].Condition
+	if !testIdentifier(t, xCond, "x") {
+		return
+	}
+	yCond := switchExp.Cases[2].Condition
+	if !testIdentifier(t, yCond, "y") {
+		return
+	}
+
+	xBody := switchExp.Cases[1].Block
+	if len(xBody) != 1 {
+		t.Fatalf("xBody does not contain 1 statement. got=%d", len(xBody))
+	}
+	xStmt := xBody[0].(*ast.ExpressionStatement)
+	if !testIntegerLiteral(t, xStmt.Expression, 1) {
+		return
+	}
+	yBody := switchExp.Cases[2].Block
+	if len(yBody) != 1 {
+		t.Fatalf("yBody does not contain 1 statement. got=%d", len(xBody))
+	}
+	yStmt := yBody[0].(*ast.ExpressionStatement)
+	if !testIntegerLiteral(t, yStmt.Expression, 2) {
+		return
+	}
+
+	if switchExp.Default == nil {
+		t.Fatalf("switchExp.Default is nil")
+	}
+	defaultStmt := switchExp.Default[0].(*ast.ExpressionStatement)
+	testIntegerLiteral(t, defaultStmt.Expression, 3)
+}
+
 func TestFunctionExpression(t *testing.T) {
 	input := `fn(x, y) { x + y; }`
 

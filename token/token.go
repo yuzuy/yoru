@@ -46,19 +46,25 @@ const (
 	False    = "FALSE"
 	If       = "IF"
 	Else     = "ELSE"
+	Switch   = "SWITCH"
+	Case     = "case"
+	Default  = "DEFAULT"
 	Return   = "RETURN"
 	Null     = "NULL"
 )
 
 var keywords = map[string]Type{
-	"fn":     Function,
-	"let":    Let,
-	"true":   True,
-	"false":  False,
-	"if":     If,
-	"else":   Else,
-	"return": Return,
-	"null":   Null,
+	"fn":      Function,
+	"let":     Let,
+	"true":    True,
+	"false":   False,
+	"if":      If,
+	"else":    Else,
+	"switch":  Switch,
+	"case":    Case,
+	"default": Default,
+	"return":  Return,
+	"null":    Null,
 }
 
 func LookUpIdent(ident string) Type {

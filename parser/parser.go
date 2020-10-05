@@ -64,6 +64,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LBracket, p.parseArrayLiteral)
 	p.registerPrefix(token.Lbrace, p.parseHashLiteral)
 	p.registerPrefix(token.If, p.parseIfExpression)
+	p.registerPrefix(token.Switch, p.parseSwitchExpression)
 	p.registerPrefix(token.Function, p.parseFunctionLiteral)
 	p.registerPrefix(token.String, p.parseStringLiteral)
 	p.registerPrefix(token.Null, p.parseNull)
@@ -375,6 +376,87 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		}
 
 		expression.Alternative = p.parseBlockStatement()
+	}
+
+	return expression
+}
+
+func (p *Parser) parseSwitchExpression() ast.Expression {
+	expression := &ast.SwitchExpression{
+		Token: p.curToken,
+		Cases: make(map[int]*ast.Case),
+	}
+
+	if p.peekTokenIs(token.Lbrace) {
+		expression.Target = &ast.Boolean{
+			Token: token.Token{Type: token.True, Literal: "true"},
+			Value: true,
+		}
+	} else {
+		p.nextToken()
+		expression.Target = p.parseExpression(LowSet)
+	}
+
+	if !p.expectPeek(token.Lbrace) {
+		return nil
+	}
+	if !p.peekTokenIs(token.Case) && !p.peekTokenIs(token.Default) && !p.peekTokenIs(token.Rbrace) {
+		return nil
+	}
+	p.nextToken()
+
+	order := 1
+	for {
+		if p.curTokenIs(token.Rbrace) {
+			break
+		}
+
+		switch p.curToken.Type {
+		case token.Case:
+			p.nextToken()
+			c := &ast.Case{
+				Condition: p.parseExpression(LowSet),
+			}
+			p.nextToken()
+			if !p.curTokenIs(token.Colon) {
+				return nil
+			}
+			p.nextToken()
+			var stmts []ast.Statement
+			for {
+				stmt := p.parseStatement()
+				if stmt != nil {
+					stmts = append(stmts, stmt)
+				}
+				p.nextToken()
+				if p.curTokenIs(token.Case) || p.curTokenIs(token.Default) || p.curTokenIs(token.Rbrace) {
+					break
+				}
+			}
+			c.Block = stmts
+			expression.Cases[order] = c
+			order++
+		case token.Default:
+			p.nextToken()
+			if !p.curTokenIs(token.Colon) {
+				return nil
+			}
+			p.nextToken()
+			var stmts []ast.Statement
+			for {
+				stmt := p.parseStatement()
+				if stmt != nil {
+					stmts = append(stmts, stmt)
+				}
+				p.nextToken()
+				if p.curTokenIs(token.Case) || p.curTokenIs(token.Default) || p.curTokenIs(token.Rbrace) {
+					break
+				}
+			}
+			expression.Default = stmts
+		default:
+			return nil
+		}
 	}
 
 	return expression

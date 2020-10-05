@@ -105,6 +105,30 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestSwitchCaseExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"switch 1 { case 1: 10 }", 10},
+		{"switch 2 { case 1: 10 case 2: 20}", 20},
+		{"switch 1 {}", nil},
+		{"switch 2 { case 1: 10 }", nil},
+		{"switch 3 { case 1: 10 case 2: 20 default: 30 }", 30},
+		{"switch { case true: 10 }", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestReturnStatement(t *testing.T) {
 	tests := []struct {
 		input    string

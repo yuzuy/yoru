@@ -31,6 +31,12 @@ if (5 < 10) {
 [1, 2];
 5 % 2;
 {"foo":"bar"};
+switch foo {
+case "foo":
+  return 1;
+case "bar":
+  return 2;
+};
 `
 
 	tests := []struct {
@@ -128,6 +134,23 @@ if (5 < 10) {
 		{token.String, "foo"},
 		{token.Colon, ":"},
 		{token.String, "bar"},
+		{token.Rbrace, "}"},
+		{token.Semicolon, ";"},
+		{token.Switch, "switch"},
+		{token.Ident, "foo"},
+		{token.Lbrace, "{"},
+		{token.Case, "case"},
+		{token.String, "foo"},
+		{token.Colon, ":"},
+		{token.Return, "return"},
+		{token.Int, "1"},
+		{token.Semicolon, ";"},
+		{token.Case, "case"},
+		{token.String, "bar"},
+		{token.Colon, ":"},
+		{token.Return, "return"},
+		{token.Int, "2"},
+		{token.Semicolon, ";"},
 		{token.Rbrace, "}"},
 		{token.Semicolon, ";"},
 		{token.EOF, ""},

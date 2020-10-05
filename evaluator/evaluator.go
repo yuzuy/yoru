@@ -5,6 +5,7 @@ import (
 
 	"github.com/yuzuy/yoru/ast"
 	"github.com/yuzuy/yoru/object"
+	"github.com/yuzuy/yoru/token"
 )
 
 var (
@@ -80,6 +81,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node.Operator, left, right)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.SwitchExpression:
+		return evalSwitchExpression(node, env)
 	case *ast.FunctionLiteral:
 		params := node.Parameters
 		body := node.Body
@@ -241,6 +244,35 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else {
 		return Null
 	}
+}
+
+func evalSwitchExpression(se *ast.SwitchExpression, env *object.Environment) object.Object {
+	for i := 1; i <= len(se.Cases); i++ {
+		comparative := &ast.InfixExpression{
+			Token:    token.Token{Type: token.EQ, Literal: "=="},
+			Left:     se.Target,
+			Operator: "==",
+			Right:    se.Cases[i].Condition,
+		}
+		condition := Eval(comparative, env)
+		if isError(condition) {
+			return condition
+		}
+
+		if isTruthy(condition) {
+			return evalBlockStatement(&ast.BlockStatement{
+				Statements: se.Cases[i].Block,
+			}, env)
+		}
+	}
+
+	if se.Default != nil {
+		return evalBlockStatement(&ast.BlockStatement{
+			Statements: se.Default,
+		}, env)
+	}
+
+	return Null
 }
 
 func isTruthy(obj object.Object) bool {
