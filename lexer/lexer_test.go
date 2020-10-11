@@ -186,3 +186,16 @@ func TestStringLiteralError(t *testing.T) {
 		t.Fatalf("error message wrong. expected=%s, got=%s", errMsg, tok.Literal)
 	}
 }
+
+func TestEscapeCharacters(t *testing.T) {
+	input := `"\n\r\t\"\'\\"`
+	l := New(input)
+
+	tok := l.NextToken()
+	if tok.Type != token.String {
+		t.Fatalf("token type wrong. expected=%s, got=%s", token.String, tok.Type)
+	}
+	if tok.Literal != "\n\r\t\"'\\" {
+		t.Fatalf("tok.Literal wrong. got=%s", tok.Literal)
+	}
+}

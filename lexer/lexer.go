@@ -140,7 +140,8 @@ func (l *Lexer) readIdentifier() string {
 }
 
 func (l *Lexer) readString() (string, error) {
-	position := l.position + 1
+	var v string
+
 	for {
 		l.readChar()
 		if l.ch == '"' {
@@ -150,9 +151,25 @@ func (l *Lexer) readString() (string, error) {
 		if l.ch == 0 {
 			return "", errors.New("string literal not terminated")
 		}
+
+		if l.ch == '\\' {
+			l.readChar()
+			switch l.ch {
+			case 'n':
+				l.ch = '\n'
+			case 'r':
+				l.ch = '\r'
+			case 't':
+				l.ch = '\t'
+			case '\\':
+				l.ch = '\\'
+			}
+		}
+
+		v += string(l.ch)
 	}
 
-	return l.input[position:l.position], nil
+	return v, nil
 }
 
 func isLetter(ch byte) bool {
