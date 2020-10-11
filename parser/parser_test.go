@@ -590,7 +590,7 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
-func TestSwitchExpression(t *testing.T) {
+func TestSwitchStatement(t *testing.T) {
 	input := `switch x {
 case x:
   1;
@@ -609,29 +609,24 @@ default:
 		t.Fatalf("program.Statements does not contain 1 statement. got=%d", len(program.Statements))
 	}
 
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	stmt, ok := program.Statements[0].(*ast.SwitchStatement)
 	if !ok {
-		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
-	}
-	switchExp, ok := stmt.Expression.(*ast.SwitchExpression)
-	if !ok {
-		t.Fatalf("stmt.Expression not *ast.SwitchExpression. got=%T", stmt.Expression)
+		t.Fatalf("program.Statements[0] not *ast.SwitchStatement. got=%T", program.Statements[0])
 	}
 
-	if len(switchExp.Cases) != 2 {
-		t.Fatalf("switchExp.Cases has wrong length. got=%d", len(switchExp.Cases))
+	if len(stmt.Cases) != 2 {
+		t.Fatalf("stmt.Cases has wrong length. got=%d", len(stmt.Cases))
 	}
-	t.Log(switchExp.Cases)
-	xCond := switchExp.Cases[1].Condition
+	xCond := stmt.Cases[1].Condition
 	if !testIdentifier(t, xCond, "x") {
 		return
 	}
-	yCond := switchExp.Cases[2].Condition
+	yCond := stmt.Cases[2].Condition
 	if !testIdentifier(t, yCond, "y") {
 		return
 	}
 
-	xBody := switchExp.Cases[1].Block
+	xBody := stmt.Cases[1].Block
 	if len(xBody) != 1 {
 		t.Fatalf("xBody does not contain 1 statement. got=%d", len(xBody))
 	}
@@ -639,7 +634,7 @@ default:
 	if !testIntegerLiteral(t, xStmt.Expression, 1) {
 		return
 	}
-	yBody := switchExp.Cases[2].Block
+	yBody := stmt.Cases[2].Block
 	if len(yBody) != 1 {
 		t.Fatalf("yBody does not contain 1 statement. got=%d", len(xBody))
 	}
@@ -648,10 +643,10 @@ default:
 		return
 	}
 
-	if switchExp.Default == nil {
-		t.Fatalf("switchExp.Default is nil")
+	if stmt.Default == nil {
+		t.Fatalf("stmt.Default is nil")
 	}
-	defaultStmt := switchExp.Default[0].(*ast.ExpressionStatement)
+	defaultStmt := stmt.Default[0].(*ast.ExpressionStatement)
 	testIntegerLiteral(t, defaultStmt.Expression, 3)
 }
 

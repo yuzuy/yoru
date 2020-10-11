@@ -184,7 +184,7 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
-type SwitchExpression struct {
+type SwitchStatement struct {
 	Token   token.Token
 	Target  Expression
 	Cases   map[int]*Case
@@ -196,17 +196,17 @@ type Case struct {
 	Block     []Statement
 }
 
-func (se *SwitchExpression) expressionNode()      {}
-func (se *SwitchExpression) TokenLiteral() string { return se.Token.Literal }
-func (se *SwitchExpression) String() string {
+func (ss *SwitchStatement) statementNode()       {}
+func (ss *SwitchStatement) TokenLiteral() string { return ss.Token.Literal }
+func (ss *SwitchStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("switch ")
-	out.WriteString(se.Target.String())
+	out.WriteString(ss.Target.String())
 	out.WriteString(" ")
 	out.WriteString("{")
 	for i := 1; ; i++ {
-		c, ok := se.Cases[i]
+		c, ok := ss.Cases[i]
 		if !ok {
 			break
 		}
@@ -217,9 +217,9 @@ func (se *SwitchExpression) String() string {
 			out.WriteString(s.String())
 		}
 	}
-	if se.Default != nil {
+	if ss.Default != nil {
 		out.WriteString("default:")
-		for _, s := range se.Default {
+		for _, s := range ss.Default {
 			out.WriteString(s.String())
 		}
 	}

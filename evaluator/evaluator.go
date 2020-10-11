@@ -81,8 +81,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node.Operator, left, right)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
-	case *ast.SwitchExpression:
-		return evalSwitchExpression(node, env)
+	case *ast.SwitchStatement:
+		return evalSwitchStatement(node, env)
 	case *ast.FunctionLiteral:
 		params := node.Parameters
 		body := node.Body
@@ -246,13 +246,13 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	}
 }
 
-func evalSwitchExpression(se *ast.SwitchExpression, env *object.Environment) object.Object {
-	for i := 1; i <= len(se.Cases); i++ {
+func evalSwitchStatement(ss *ast.SwitchStatement, env *object.Environment) object.Object {
+	for i := 1; i <= len(ss.Cases); i++ {
 		comparative := &ast.InfixExpression{
 			Token:    token.Token{Type: token.EQ, Literal: "=="},
-			Left:     se.Target,
+			Left:     ss.Target,
 			Operator: "==",
-			Right:    se.Cases[i].Condition,
+			Right:    ss.Cases[i].Condition,
 		}
 		condition := Eval(comparative, env)
 		if isError(condition) {
@@ -261,14 +261,14 @@ func evalSwitchExpression(se *ast.SwitchExpression, env *object.Environment) obj
 
 		if isTruthy(condition) {
 			return evalBlockStatement(&ast.BlockStatement{
-				Statements: se.Cases[i].Block,
+				Statements: ss.Cases[i].Block,
 			}, env)
 		}
 	}
 
-	if se.Default != nil {
+	if ss.Default != nil {
 		return evalBlockStatement(&ast.BlockStatement{
-			Statements: se.Default,
+			Statements: ss.Default,
 		}, env)
 	}
 
